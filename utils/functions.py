@@ -11,8 +11,8 @@ from tqdm import tqdm
 from matplotlib.colors import ListedColormap
 
 
-def get_colormap():
-    colormap = np.loadtxt('colormap_parula.txt')
+def get_colormap(fname='colormap_parula.txt'):
+    colormap = np.loadtxt(fname)
     cmap = ListedColormap(colormap)
     return cmap
 
