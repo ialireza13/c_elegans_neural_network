@@ -1,0 +1,9 @@
+numpy
+networkx
+python-louvain
+matplotlib
+scipy
+pingouin
+tqdm
+gurobipy
+pandas
