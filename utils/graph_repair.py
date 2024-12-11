@@ -3,7 +3,7 @@
 #find the minimum number of edges to add or remove
 #to ensure the coloring is inbalanced 
 import networkx as nx
-import kamei_cock as kamei
+import utils.kamei_cock as kamei
 import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
