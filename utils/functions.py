@@ -191,7 +191,10 @@ def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smoo
             for i, n in enumerate(name):
                 worm_dict[n] = backward_data[worm_id][0][0][:, i]
             worm_dicts.append(worm_dict)
-            
+        
+        # Rearrange to map to the new data
+        worm_dicts = [worm_dicts[0], worm_dicts[1], worm_dicts[2], worm_dicts[3], worm_dicts[6], worm_dicts[5], worm_dicts[4], worm_dicts[10], worm_dicts[9], worm_dicts[7], worm_dicts[8]]
+        
     return worm_dicts
 
 
