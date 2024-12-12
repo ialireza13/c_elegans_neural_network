@@ -9,6 +9,8 @@ from scipy.io import loadmat
 from scipy.signal import detrend
 from tqdm import tqdm
 from matplotlib.colors import ListedColormap
+from scipy import signal
+from scipy.signal import savgol_filter
 
 
 def get_colormap(fname='utils/colormap_parula.txt'):
@@ -17,7 +19,7 @@ def get_colormap(fname='utils/colormap_parula.txt'):
     return cmap
 
 
-def read_input_mat_file(fname: str, style: int=1):
+def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False):
     if style == 1:
         dataset = loadmat(fname)['MainStruct'].T
 
@@ -32,6 +34,33 @@ def read_input_mat_file(fname: str, style: int=1):
             worm_dict = {}
             for neuron_id in neuron_ids[-1]:
                 worm_dict[neurons[neuron_id]] = dataset[worm_id][0][0][:, neuron_id]
+                if remove_trend:
+                    worm_dict[neurons[neuron_id]] = detrend(worm_dict[neurons[neuron_id]])
+                if smooth_spikes:
+                    window_size = 50  # Sliding window size
+                    threshold_multiplier = 3  # Standard deviation multiplier
+
+                    # Sliding window spike detection
+                    spike_indices = []
+                    for i in range(len(worm_dict[neurons[neuron_id]])):
+                        start = max(0, i - window_size // 2)
+                        end = min(len(worm_dict[neurons[neuron_id]]), i + window_size // 2)
+                        local_mean = np.mean(worm_dict[neurons[neuron_id]][start:end])
+                        local_std = np.std(worm_dict[neurons[neuron_id]][start:end])
+                        if abs(worm_dict[neurons[neuron_id]][i] - local_mean) > threshold_multiplier * local_std:
+                            spike_indices.append(i)
+
+                    # Replace spikes with interpolation
+                    cleaned_data = worm_dict[neurons[neuron_id]].copy()
+                    for idx in spike_indices:
+                        if 1 <= idx < len(worm_dict[neurons[neuron_id]]) - 1:
+                            cleaned_data[idx] = (worm_dict[neurons[neuron_id]][idx - 1] + worm_dict[neurons[neuron_id]][idx + 1]) / 2
+
+                    # Smoothing
+                    smoothed_data = savgol_filter(cleaned_data, 51, 3)  # Window size 51, polynomial order 3
+                    worm_dict[neurons[neuron_id]] = smoothed_data
+                if mean_zero:
+                    worm_dict[neurons[neuron_id]] -= np.mean(worm_dict[neurons[neuron_id]])
                 worm_dict['annot'] = dataset[worm_id][0][7].flatten()
             worm_dicts.append(worm_dict)
             
