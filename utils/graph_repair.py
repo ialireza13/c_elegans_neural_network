@@ -491,7 +491,7 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
  
 def repair_network(color_file_path, instance_file_path, output_file_path, alpha, beta, prohibit_file_path=None):
 
-    from settings import param_data
+    from utils.settings import param_data
     
     rm_add_flag = param_data["rm_add_flag"]        
     if rm_add_flag == 'add_only':
