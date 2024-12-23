@@ -19,7 +19,7 @@ def get_colormap(fname='utils/colormap_parula.txt'):
     return cmap
 
 
-def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False):
+def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False, min_active: bool=None):
     if style == 1:
         dataset = loadmat(fname)['MainStruct'].T
 
@@ -62,6 +62,11 @@ def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smoo
                 if mean_zero:
                     worm_dict[neurons[neuron_id]] -= np.mean(worm_dict[neurons[neuron_id]])
                 worm_dict['annot'] = dataset[worm_id][0][7].flatten()
+            
+            if min_active:
+                maxes = np.vstack([worm_dict[k] for k in [key for key in worm_dict.keys() if key[0] in ['D', 'V']]]).max(axis=0)
+                worm_dict['annot'][np.abs(maxes) < min_active] = 1
+                
             worm_dicts.append(worm_dict)
             
     else:
@@ -193,7 +198,9 @@ def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smoo
             worm_dicts.append(worm_dict)
         
         # Rearrange to map to the new data
-        worm_dicts = [worm_dicts[0], worm_dicts[1], worm_dicts[2], worm_dicts[3], worm_dicts[6], worm_dicts[5], worm_dicts[4], worm_dicts[10], worm_dicts[9], worm_dicts[7], worm_dicts[8]]
+        worm_dicts = [worm_dicts[0], worm_dicts[1], worm_dicts[2], worm_dicts[3], worm_dicts[6], worm_dicts[5], worm_dicts[4], worm_dicts[10]
+                    #   , worm_dicts[9], worm_dicts[7], worm_dicts[8]
+                      ]
         
     return worm_dicts
 
