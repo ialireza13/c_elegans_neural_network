@@ -32,10 +32,6 @@ def FindMP(gg):
     grain = network.top_lattice_node() #most partitions
     return(len(set(grain[0]))), network
 
-def get_key_from_value(dictionary, value):
-    for key, val in dictionary.items():
-        if value in val:
-            return key
 
 def read_data(fname,colorfile,xlinks=None):
     
@@ -43,65 +39,54 @@ def read_data(fname,colorfile,xlinks=None):
     GraphData = pd.read_csv(fname,sep=charsep,index_col=[0,1],header=None, \
                             comment="#")
     
-    #data validation -- check for duplicate edges
-    idx = GraphData.index
-    if max(idx.duplicated()):
-        print('Duplicate edges found. Returning garbage from readdata! \n')
-        return []
+    #check for duplicate edges
+    assert not max(GraphData.index.duplicated()), 'Duplicate edges found.'
     
     #directed graph!
     EdgeDict = GraphData.to_dict()[2]
     
     #get the edge set, Edges, and edge weights
-    edges,edge_weights = gp.multidict(EdgeDict)
+    edges, edge_weights = gp.multidict(EdgeDict)
             
-    #make the node set
-    nodes = []
-    for tup in edges:
-        if tup[0] not in nodes:
-            nodes.append(tup[0])
-        if tup[1] not in nodes:
-            nodes.append(tup[1])
-    
     #cdict keys are read in color set
     ctable=pd.read_csv(colorfile,index_col=0,sep=charsep,header=None,\
                        comment="#")
         
     cdict = ctable.to_dict()[1]
     
-    print("Read graph: n="+str(len(nodes))+" m="+str(len(edges)))
+    # create a list of nodes
+    nodes = list({item for item in cdict.keys()} | {item for tup in EdgeDict.keys() for item in tup})
+    
+    # print("Read graph: n="+str(len(nodes))+" m="+str(len(edges)))
 
     #set up a list of colorsets
-    color_sets = []        
-    color_dict = {}
-    for c in set(cdict.values()):
-        C = [i for i in cdict.keys() if cdict[i]==c]
-        color_sets.append(C)
-        color_dict[c] = C
-     
+    color_dict = defaultdict(list)
+
+    for key, value in cdict.items():
+        color_dict[value].append(key)
+
+    color_sets = list(color_dict.values())
+    
     color_pairs =[]
     for C in color_sets:
-        for p in C:
-            
-            #just in case the nodes are disconnected in a graph
-            if p not in nodes:
-                nodes.append(p)
-                
         for p,q in itools.combinations(C,2):
             color_pairs.append((p,q))            
 
-    print("Read colors")
+    # print("Read colors")
+    
+    rev_color_dict = {string: key for key, values in color_dict.items() for string in values}
             
     nc_tuples = []
     outer_imbalance_dict = defaultdict(dict)
     inner_imbalance_dict = defaultdict(dict)
-    support_num=0;
+    support_num=0
+    
     for C,D in itools.combinations(color_sets,2):
         for p in C:
-            p_color = get_key_from_value(color_dict,p)
+            p_color = rev_color_dict[p]
             for q in D:
-                support_num = support_num + 1;
-                q_color = get_key_from_value(color_dict,q)
+                support_num = support_num + 1
+                q_color = rev_color_dict[q]
                 inner_imbalance_dict[p][q]=[p_color,q_color]
                 base_colors = list(color_dict.keys())
                 base_colors.remove(p_color)
@@ -112,11 +97,9 @@ def read_data(fname,colorfile,xlinks=None):
                     nc_tuples.append((p,q,c))
                     nc_tuples.append((q,p,c))
                 
-    print("Created tuples")
+    # print("Created tuples")
 
-    all_pairs_1 = [(i,j) for i,j in itools.combinations_with_replacement(nodes,2) if i != j] #directed pairs
-    all_pairs_2 = [(j,i) for i,j in itools.combinations_with_replacement(nodes,2) if i != j] #directed pairs
-    all_pairs = all_pairs_1+all_pairs_2
+    all_pairs = [(i, j) for i in nodes for j in nodes if i != j]
     
     print("created all pairs")
     
@@ -132,7 +115,7 @@ def read_data(fname,colorfile,xlinks=None):
         non_existing_EdgeDict.update(EdgeDict)
         
         edges_to_avoid = non_existing_EdgeDict.copy()
-        avoid_edges,ae_edge_weights = gp.multidict(edges_to_avoid)
+        avoid_edges, ae_edge_weights = gp.multidict(edges_to_avoid)
         
         not_e = {(p,q):1 for (p,q) in all_pairs if (p,q) not in avoid_edges}
         not_edges,ne_weights = gp.multidict(not_e)
@@ -226,9 +209,6 @@ def CreateRMIP(inputs,env,Imbalance,HardFlag,FixedEdges,FixedNonEdges,AddRemoveF
                         one_imbalance.append(rmip.addConstr((1 >= strict_balance[p,q,c] + \
                                                              strict_balance[q,p,c]) ,name='one_imbalance_'+str(p)+'_'+str(q)+'_'+str(c)))
                     
-                        
-                        
-                    
                     if Imbalance=='v1':                         
                         atleast_one.append(rmip.addConstr((sum(strict_balance[p,q,i] for i in color_dict.keys()) +\
                                                        sum(strict_balance[q,p,i] for i in color_dict.keys()) >= 1),name='atleast_one_'+str(p)+'_'+str(q)))
@@ -243,7 +223,7 @@ def CreateRMIP(inputs,env,Imbalance,HardFlag,FixedEdges,FixedNonEdges,AddRemoveF
                         atleast_one.append(rmip.addConstr((quicksum(B) +\
                                             auxiliary_var_2[counter] >= 1),name='atleast_one_'+str(p)+'_'+str(q)))
                     
-                    counter=counter+1
+                    counter += 1
 
     else:
         for D in color_sets:
@@ -291,15 +271,14 @@ def CreateRMIP(inputs,env,Imbalance,HardFlag,FixedEdges,FixedNonEdges,AddRemoveF
 def set_rmip(graphpath,colorpath,Imbalance,HardFlag,\
                  FixedEdges,FixedNonEdges,InDegOneFlag,AddRemoveFlag,prohibit):
     
-    print("#######TIME TO SET UP#######\n")
+    # print("#######TIME TO SET UP#######\n")
     # Record the time before initializing the Gurobi environment
     start_time = time.time()
     
     #create the inputs
-    print("Reading data from " + graphpath + " and " + colorpath)
+    # print("Reading data from " + graphpath + " and " + colorpath)
     inputs = read_data(graphpath,colorpath,prohibit)
     
-    #temporary -- setdict will be depracated
     nodes = inputs['nodes']
     edges = inputs['edges']
     color_pairs = inputs['color_pairs']
@@ -314,14 +293,14 @@ def set_rmip(graphpath,colorpath,Imbalance,HardFlag,\
     env = gp.Env()
     
     #create the model
-    print("Creating model")
+    # print("Creating model")
     rmip,rcons,rvars,remove_edge,add_edge,node_balance_pos,node_balance_neg = \
         CreateRMIP(inputs,env,Imbalance,HardFlag,FixedEdges,FixedNonEdges,AddRemoveFlag,InDegOneFlag)
 
     # Record the time after initializing the environment
     end_time = time.time()
     setup_time = end_time - start_time
-    print(str(setup_time))
+    print('Setup time: ' + str(setup_time))
 
     return rmip,rcons,rvars,setdict,color_sets,remove_edge,add_edge,node_balance_pos,node_balance_neg,setup_time
 
@@ -380,30 +359,19 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
     sumremovals = 0
     sumadds = 0
     idealnum=len(colorsets)
-    feasible = (rmip.Status ==GRB.OPTIMAL)
+    feasible = (rmip.Status == GRB.OPTIMAL)
     
     G_result = nx.DiGraph()
 
     if NetX==True:
         if feasible:
-            for (i,j) in E:
-                if abs(re[i,j].x - 1) > epsilon:
-                    G_result.add_edge(i, j)
-    
-            for (i,j) in NE:
-                if abs(ae[i,j].x - 1) < epsilon:
-                    G_result.add_edge(i, j)
-
-        if feasible:
-            for (i,j) in E:
-                if abs(re[i,j].x - 1) < epsilon:
-                    sumremovals = sumremovals + 1
-    
-            for (i,j) in NE:
-                if abs(ae[i,j].x - 1) < epsilon:
-                    sumadds = sumadds + 1
-    
-    
+            
+            G_result.add_edges_from([edge for edge in E if abs(re[edge[0], edge[1]].x - 1) > epsilon])
+            sumremovals += len([edge for edge in E if abs(re[edge[0], edge[1]].x - 1) < epsilon])
+            
+            G_result.add_edges_from([edge for edge in NE if abs(ae[edge[0], edge[1]].x - 1) < epsilon])
+            sumadds += len([edge for edge in NE if abs(ae[edge[0], edge[1]].x - 1) < epsilon])
+            
     if Save_info==True:
         outfname = fname+"directed.output.txt"
         f = open(outfname,"w")
@@ -440,7 +408,9 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
             print(f'Maximum imbalance\n{m_nb.x}',file=f)            
         else:
             print("Maximum imbalance\n\n")
+            
         print('Nonzero imbalances',file = f)    
+        
         if feasible:
             for (i,j) in CP:
                 imbalance = nb_p[i,j].x - nb_n[i,j].x
@@ -450,13 +420,16 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
         print('\nImbalances for each node and color',file=f)
         
         if feasible:        
-            for C,D in itools.combinations(colorsets,2):
+            for C, D in itools.combinations(colorsets, 2):
                 for p in C:
                     for q in D:
-                        print(f'Imbalances between {p} and {q}',file=f)
-                        for i in cd:
-                            if sb[p,q,i].x == 1 or sb[q,p,i].x == 1:
-                                print(f'Color {i}',file=f)
+                        # Log the imbalance between `p` and `q`
+                        print(f'Imbalances between {p} and {q}', file=f)
+                        
+                        # Filter and print relevant colors directly
+                        imbalanced_colors = [i for i in cd if sb[p, q, i].x == 1 or sb[q, p, i].x == 1]
+                        for color in imbalanced_colors:
+                            print(f'Color {color}', file=f)
     
         print("\n\n",end="",file=f)
         print("Input graph",file=f)
@@ -480,11 +453,11 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
     
         
     else:
-        gname=[]; EdgesRemoved=[]; EdgesAdded=[]; outfname=[]; #sumremovals=[]; sumadds=[];
+        gname=[]; EdgesRemoved=[]; EdgesAdded=[]; outfname=[];
 
     minp, net = FindMP(G_result)
     
-    print(f"Found {minp} colors, minimal is {idealnum}")
+    # print(f"Found {minp} colors, minimal is {idealnum}")
 
     return gname,idealnum,EdgesRemoved,EdgesAdded,sumremovals,sumadds,outfname,rmip,rcons,rvars,G_result,executionTime
  
