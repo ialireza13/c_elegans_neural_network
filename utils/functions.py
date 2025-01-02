@@ -19,188 +19,54 @@ def get_colormap(fname='utils/colormap_parula.txt'):
     return cmap
 
 
-def read_input_mat_file(fname: str, style: int=1, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False, min_active: bool=None):
-    if style == 1:
-        dataset = loadmat(fname)['MainStruct'].T
+def read_input_mat_file(fname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False, min_active: bool=None):
+    dataset = loadmat(fname)['MainStruct'].T
 
-        neuron_names = []
-        neuron_ids = []
-        worm_dicts = []
+    neuron_names = []
+    neuron_ids = []
+    worm_dicts = []
 
-        for worm_id in range(len(dataset)):
-            neurons = [((x[0][0].tolist()[0] if len(x[0][0].tolist())>0 else '') if len(x[0])>0 else '') if len(x)>0 else '' for x in dataset[worm_id][0][2][0]]
-            neuron_names.append([x for x in neurons if (x[:2] == 'VA' or x[:2] == 'DA' or x in ['AVAR', 'AVAL', 'RIMR', 'RIML', 'AVEL', 'AIBR', 'AIBL', 'AVER'])])
-            neuron_ids.append([i for i, x in enumerate(neurons) if (x[:2] == 'VA' or x[:2] == 'DA' or x in ['AVAR', 'AVAL', 'RIMR', 'RIML', 'AVEL', 'AIBR', 'AIBL', 'AVER'])])
-            worm_dict = {}
-            for neuron_id in neuron_ids[-1]:
-                worm_dict[neurons[neuron_id]] = dataset[worm_id][0][0][:, neuron_id]
-                if remove_trend:
-                    worm_dict[neurons[neuron_id]] = detrend(worm_dict[neurons[neuron_id]])
-                if smooth_spikes:
-                    window_size = 50  # Sliding window size
-                    threshold_multiplier = 3  # Standard deviation multiplier
+    for worm_id in range(len(dataset)):
+        neurons = [((x[0][0].tolist()[0] if len(x[0][0].tolist())>0 else '') if len(x[0])>0 else '') if len(x)>0 else '' for x in dataset[worm_id][0][2][0]]
+        neuron_names.append([x for x in neurons if (x[:2] == 'VA' or x[:2] == 'DA' or x in ['AVAR', 'AVAL', 'RIMR', 'RIML', 'AVEL', 'AIBR', 'AIBL', 'AVER'])])
+        neuron_ids.append([i for i, x in enumerate(neurons) if (x[:2] == 'VA' or x[:2] == 'DA' or x in ['AVAR', 'AVAL', 'RIMR', 'RIML', 'AVEL', 'AIBR', 'AIBL', 'AVER'])])
+        worm_dict = {}
+        for neuron_id in neuron_ids[-1]:
+            worm_dict[neurons[neuron_id]] = dataset[worm_id][0][0][:, neuron_id]
+            if remove_trend:
+                worm_dict[neurons[neuron_id]] = detrend(worm_dict[neurons[neuron_id]])
+            if smooth_spikes:
+                window_size = 50  # Sliding window size
+                threshold_multiplier = 3  # Standard deviation multiplier
 
-                    # Sliding window spike detection
-                    spike_indices = []
-                    for i in range(len(worm_dict[neurons[neuron_id]])):
-                        start = max(0, i - window_size // 2)
-                        end = min(len(worm_dict[neurons[neuron_id]]), i + window_size // 2)
-                        local_mean = np.mean(worm_dict[neurons[neuron_id]][start:end])
-                        local_std = np.std(worm_dict[neurons[neuron_id]][start:end])
-                        if abs(worm_dict[neurons[neuron_id]][i] - local_mean) > threshold_multiplier * local_std:
-                            spike_indices.append(i)
+                # Sliding window spike detection
+                spike_indices = []
+                for i in range(len(worm_dict[neurons[neuron_id]])):
+                    start = max(0, i - window_size // 2)
+                    end = min(len(worm_dict[neurons[neuron_id]]), i + window_size // 2)
+                    local_mean = np.mean(worm_dict[neurons[neuron_id]][start:end])
+                    local_std = np.std(worm_dict[neurons[neuron_id]][start:end])
+                    if abs(worm_dict[neurons[neuron_id]][i] - local_mean) > threshold_multiplier * local_std:
+                        spike_indices.append(i)
 
-                    # Replace spikes with interpolation
-                    cleaned_data = worm_dict[neurons[neuron_id]].copy()
-                    for idx in spike_indices:
-                        if 1 <= idx < len(worm_dict[neurons[neuron_id]]) - 1:
-                            cleaned_data[idx] = (worm_dict[neurons[neuron_id]][idx - 1] + worm_dict[neurons[neuron_id]][idx + 1]) / 2
+                # Replace spikes with interpolation
+                cleaned_data = worm_dict[neurons[neuron_id]].copy()
+                for idx in spike_indices:
+                    if 1 <= idx < len(worm_dict[neurons[neuron_id]]) - 1:
+                        cleaned_data[idx] = (worm_dict[neurons[neuron_id]][idx - 1] + worm_dict[neurons[neuron_id]][idx + 1]) / 2
 
-                    # Smoothing
-                    smoothed_data = savgol_filter(cleaned_data, 51, 3)  # Window size 51, polynomial order 3
-                    worm_dict[neurons[neuron_id]] = smoothed_data
-                if mean_zero:
-                    worm_dict[neurons[neuron_id]] -= np.mean(worm_dict[neurons[neuron_id]])
-                worm_dict['annot'] = dataset[worm_id][0][7].flatten()
-            
-            if min_active:
-                maxes = np.vstack([worm_dict[k] for k in [key for key in worm_dict.keys() if key[0] in ['D', 'V']]]).max(axis=0)
-                worm_dict['annot'][np.abs(maxes) < min_active] = 1
-                
-            worm_dicts.append(worm_dict)
-            
-    else:
-        data = loadmat(fname)
-        backward_data = data['Hernan_backward'].T
-
-        backward_data[0][0][0][1070:1102, 15] = 0.66
-        backward_data[0][0][0][:, 15] = detrend(backward_data[0][0][0][:, 15]) + 0.3265
-        backward_data[0][0][0][1096:, 5] += 0.25
-        backward_data[0][0][0][1070:1097, 5] = 0.55
-
-        x1 = np.array([556, 1774])
-        y1 = np.array([0.0964, 0.5769])
-        coefficients = np.polyfit(x1, y1, 1)
-        a, b = coefficients
-
-        def t(x):
-            return a * x + b
-
-        l = t(np.linspace(1, 1873, 1873))
-        rem = l[555:]
-        backward_data[0][0][0][555:, 5] = (backward_data[0][0][0][555:, 5] - rem) + 0.11
-        backward_data[0][0][0][:, 5] -= 0.09
-
-        # Section 2
-        backward_data[2][0][0][538:1570, 7] = detrend(backward_data[2][0][0][538:1570, 7]) + 0.531
-        backward_data[2][0][0][1570:, 7] += 0.03
-        backward_data[2][0][0][1568:1575, 7] = 0.263
-
-        backward_data[2][0][0][507:1573, 18] = detrend(backward_data[2][0][0][507:1573, 18])
-        backward_data[2][0][0][:507, 18] -= 0.4
-        backward_data[2][0][0][1577:, 18] -= 0.4
-        backward_data[2][0][0][1572:1579, 18] = -0.183
-        backward_data[2][0][0][:, 18] += 0.4
-
-        # Section 3
-        A = np.zeros(backward_data[3][0][0][:, 4].shape)
-        indices = [15, 85, 148, 159, 293, 434, 577, 712, 984, 1645]
-        values = [0.39, 0.36, 0.35, 0.35, 0.36, 0.37, 0.38, 0.295, 0.3, 0.24]
-        A[indices] = values
-
-        # Substitute values function
-        def _substitute_values(data, values):
-            # Find indices where `values` has non-zero entries
-            indices = np.where(values != 0)[0]
-            if len(indices) == 0:
-                return data  # No values to substitute
-            
-            # Replace data at the specified indices
-            modified_data = data.copy()
-            modified_data[indices] = values[indices]
-            
-            # Interpolate between substituted points
-            interp_indices = np.arange(len(data))
-            interp_values = np.interp(interp_indices, indices, modified_data[indices])
-            
-            return interp_values
-
-        def smooth(data, window_size):
-            """
-            Smooth the data using a moving average.
-            """
-            return np.convolve(data, np.ones(window_size) / window_size, mode='same')
-
-        def substitute_values(data, values, window_size):
-            modified_data = _substitute_values(data, values)
-            # return smooth(modified_data, window_size)
-            return modified_data
-
-
-        backward_data[3][0][0][:, 4] = substitute_values(backward_data[3][0][0][:, 4], A, 6) - 0.16
-
-        # More modifications to Hernan_backward[3]['Rec']
-        backward_data[3][0][0][:155, 7] -= 0.35
-        A = np.zeros(backward_data[3][0][0][:, 7].shape)
-        indices = [154, 209, 517, 477]
-        values = [0.45, 0.518, 0.375, 0.21]
-        A[indices] = values
-        backward_data[3][0][0][:, 7] = substitute_values(backward_data[3][0][0][:, 7], A, 6)
-
-        backward_data[3][0][0][1643:1660, 15] = 0.23
-        A = backward_data[3][0][0][:, 18]
-        A[A < 0.08] = 0.08
-        backward_data[3][0][0][:, 18] = A
-
-        # Section 4
-        backward_data[6][0][0][307:319, 0] = 0.32
-        backward_data[6][0][0][647:659, 0] = 0.22
-        backward_data[6][0][0][969:981, 0] = 0.24
-        backward_data[6][0][0][1192:1210, 0] = 0.13
-        backward_data[6][0][0][1441:1456, 0] = 0.16
-        backward_data[6][0][0][:, 0] -= 0.0811
-        backward_data[6][0][0][:, 14] -= 0.15
-        backward_data[6][0][0][645:656, 14] = 0.053
-
-        # Section 5
-        backward_data[7][0][0][:, 8] -= 0.044
-        A = backward_data[7][0][0][:, 8]
-        A[A < 0] = 0
-        backward_data[7][0][0][:, 8] = A
-
-        # Section 6
-        backward_data[8][0][0][:800, 2] = detrend(backward_data[8][0][0][:800, 2]) + 0.7
-        backward_data[8][0][0][:, 2] -= 0.2
-        backward_data[8][0][0][:, 11] -= 0.16
-
-        names = [
-            ["DA02", "DA03", "DA04", "DA05", "DA06", "DA07", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11"],
-            ["DA01", "DA02", "DA03", "DA04", "DA05", "DA06", "DA07", "VA01", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11"],
-            ["DA01", "DA02", "DA03", "DA04", "DA05", "DA06", "DA07", "DA09", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11", "VA12"],
-            ["DA01", "DA02", "DA03", "DA04", "DA05", "DA06", "DA07", "DA08", "DA09", "VA01", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11", "VA12"],
-            ["DA02", "DA03", "DA05", "DA06", "DA07", "DA08", "DA09", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11", "VA12"],
-            ["DA03", "DA04", "DA05", "DA06", "DA07", "DA08", "DA09", "VA02", "VA04", "VA05", "VA06", "VA07", "VA09", "VA10", "VA11"],
-            ["DA02", "DA03", "DA04", "DA05", "DA06", "DA07", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA09", "VA10", "VA11"],
-            ["DA03", "DA04", "DA05", "DA06", "DA07", "DA08", "DA09", "VA02", "VA04", "VA05", "VA06", "VA07", "VA09", "VA10", "VA11"],
-            ["DA02", "DA03", "DA05", "DA06", "DA07", "DA08", "DA09", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11", "VA12"],
-            ["DA02", "DA03", "DA04", "DA05", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08"],
-            ["DA01", "DA02", "DA03", "DA04", "DA05", "DA07", "DA08", "DA09", "VA02", "VA03", "VA04", "VA05", "VA06", "VA07", "VA08", "VA09", "VA10", "VA11"]
-        ]
-
-        for id, name in enumerate(names):
-            assert backward_data[id][0][0].shape[1] == len(name)
+                # Smoothing
+                smoothed_data = savgol_filter(cleaned_data, 51, 3)  # Window size 51, polynomial order 3
+                worm_dict[neurons[neuron_id]] = smoothed_data
+            if mean_zero:
+                worm_dict[neurons[neuron_id]] -= np.mean(worm_dict[neurons[neuron_id]])
+            worm_dict['annot'] = dataset[worm_id][0][7].flatten()
         
-        worm_dicts = []
-        for worm_id, name in enumerate(names):
-            worm_dict = {}
-            for i, n in enumerate(name):
-                worm_dict[n] = backward_data[worm_id][0][0][:, i]
-            worm_dicts.append(worm_dict)
-        
-        # Rearrange to map to the new data
-        worm_dicts = [worm_dicts[0], worm_dicts[1], worm_dicts[2], worm_dicts[3], worm_dicts[6], worm_dicts[5], worm_dicts[4], worm_dicts[10]
-                    #   , worm_dicts[9], worm_dicts[7], worm_dicts[8]
-                      ]
+        if min_active:
+            maxes = np.vstack([worm_dict[k] for k in [key for key in worm_dict.keys() if key[0] in ['D', 'V']]]).max(axis=0)
+            worm_dict['annot'][np.abs(maxes) < min_active] = 1
+            
+        worm_dicts.append(worm_dict)
         
     return worm_dicts
 
@@ -355,60 +221,66 @@ def louvain_clustering_best_modularity(adj_matrix, nodes, n_iterations=100):
     return best_clustering
 
 
-def plot_graph_with_weights_and_groups(Cij, Nodes, groups):
+def plot_graph_with_weights_and_groups(G, pos=None, draw_edge_labels=False, uniform_edges=False):
     """
     Plot the graph represented by the adjacency matrix with edge thickness proportional to weights
-    and nodes colored based on groups.
+    and nodes colored based on groups. Edges are colored based on the source node.
 
     Parameters:
         Cij (np.ndarray): Adjacency matrix representing edge weights.
         Nodes (list): List of node identifiers.
         groups (list of lists): List of lists, where each inner list contains nodes belonging to the same group.
+        pos (dict, optional): A dictionary with nodes as keys and positions as values. If not provided, a circular layout is used.
     """
-    G = nx.Graph()
-
-    # Add nodes
-    for i, node in enumerate(Nodes):
-        G.add_node(node, pos=(i, 0))  # Adding a positional layout for simplicity
-
-    # Add edges with weights
-    for i in range(len(Nodes)):
-        for j in range(i + 1, len(Nodes)):
-            if Cij[i, j] > 0:  # Only consider edges with non-zero weights
-                G.add_edge(Nodes[i], Nodes[j], weight=Cij[i, j])
-
-    pos = nx.circular_layout(G)  # Generate positions for the graph
+    
+    if not pos:
+        pos = nx.circular_layout(G)  # Generate positions for the graph
 
     # Extract edge weights for thickness
     edge_weights = nx.get_edge_attributes(G, 'weight')
 
-    # Assign colors to nodes based on groups
-    group_colors = {}
-    unique_colors = plt.cm.get_cmap("tab10", len(groups) + 1)  # Generate a color map
+    # Assign colors to nodes based on node attributes
+    node_colors = [node[1]['color'] for node in G.nodes(data=True)]
+    unique_colors = plt.cm.get_cmap("tab20", len(set(node_colors)) + 1)  # Generate a color map
+    node_colors = [unique_colors(c) for c in node_colors]
 
-    for i, group in enumerate(groups):
-        for node in group:
-            group_colors[node] = unique_colors(i)
+    # Prepare edge colors based on the source node (first node in the edge tuple)
+    edge_colors = [unique_colors(G.nodes[edge[0]]['color']) for edge in G.edges()]
 
-    # Assign remaining nodes to a default color
-    for node in Nodes:
-        if node not in group_colors:
-            group_colors[node] = unique_colors(len(groups))
-
-    # Prepare node colors
-    node_colors = [group_colors[node] for node in Nodes]
+    # Normalize edge weights for thickness
+    weights = np.array(list(edge_weights.values()))
+    if len(weights) > 0:
+        min_weight, max_weight = weights.min(), weights.max()
+        # Avoid division by zero if all weights are the same
+        if min_weight == max_weight:
+            normalized_weights = np.ones_like(weights) * 2  # Arbitrary thickness
+        else:
+            # Scale weights to a range of 1 to 10 for better visibility
+            normalized_weights = 1 + 9 * (weights - min_weight) / (max_weight - min_weight)
+    else:
+        normalized_weights = []
 
     # Plot the graph
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(10, 8))
     nx.draw(
-        G, pos, with_labels=True, node_size=500, node_color=node_colors,
-        edge_color='gray', width=[weight * 5 for weight in edge_weights.values()]
+        G, pos,
+        with_labels=True,
+        node_size=500,
+        node_color=node_colors,
+        edge_color=edge_colors,
+        width=normalized_weights if not uniform_edges else 2,  # Uniform edge thickness
+        alpha=0.7,  # Slight transparency for better visualization
+        edge_cmap=plt.cm.Blues  # Optional: Define a colormap for edges
     )
-    nx.draw_networkx_edge_labels(
-        G, pos, edge_labels={edge: f'{weight:.2f}' for edge, weight in edge_weights.items()}
-    )
+    
+    # Optionally, add edge labels for weights
+    if draw_edge_labels:
+        edge_labels = {edge: f'{weight:.2f}' for edge, weight in edge_weights.items()}
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8)
 
+    plt.axis('off')  # Hide the axis
     plt.show()
+
     
 
 def get_cooccurrence_matrix(all_cliques, mapping_neuron_to_idx):

@@ -102,11 +102,8 @@ def read_data(fname,colorfile,xlinks=None):
     all_pairs = [(i, j) for i in nodes for j in nodes if i != j]
     
     print("created all pairs")
-    
-    #prohibited edges are turned off right now
-    za = True
 
-    if za == False:
+    if xlinks != None:
         print(xlinks)
         prohibited = pd.read_csv(xlinks,sep=charsep,index_col=[0,1],header=None)
         
