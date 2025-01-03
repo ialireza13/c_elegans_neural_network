@@ -19,7 +19,7 @@ def get_colormap(fname='utils/colormap_parula.txt'):
     return cmap
 
 
-def read_input_mat_file(fname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False, min_active: bool=None):
+def read_input_mat_file(fname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False):
     dataset = loadmat(fname)['MainStruct'].T
 
     neuron_names = []
@@ -62,10 +62,6 @@ def read_input_mat_file(fname: str, remove_trend: bool=False, smooth_spikes: boo
                 worm_dict[neurons[neuron_id]] -= np.mean(worm_dict[neurons[neuron_id]])
             worm_dict['annot'] = dataset[worm_id][0][7].flatten()
         
-        if min_active:
-            maxes = np.vstack([worm_dict[k] for k in [key for key in worm_dict.keys() if key[0] in ['D', 'V']]]).max(axis=0)
-            worm_dict['annot'][np.abs(maxes) < min_active] = 1
-            
         worm_dicts.append(worm_dict)
         
     return worm_dicts
@@ -342,12 +338,14 @@ def calculate_pearson(signal1, signal2):
     correlation, _ = pearsonr(signal1, signal2)
     return correlation
 
+
 def calculate_spearman(signal1, signal2):
     """
     Calculate Spearman correlation coefficient.
     """
     correlation, _ = spearmanr(signal1, signal2)
     return correlation
+
 
 def calculate_kendall(signal1, signal2):
     """
@@ -356,11 +354,13 @@ def calculate_kendall(signal1, signal2):
     correlation, _ = kendalltau(signal1, signal2)
     return correlation
 
+
 def calculate_distance_correlation(signal1, signal2, n_boot):
     """
     Calculate distance correlation using pingouin library.
     """
     return pingouin.distance_corr(signal1, signal2, n_boot=n_boot)
+
 
 def calculate_covariance(signal1, signal2):
     """
@@ -371,11 +371,13 @@ def calculate_covariance(signal1, signal2):
     covariance = np.mean((signal1 - signal1_mean) * (signal2 - signal2_mean))
     return covariance
 
+
 def los(signal1, signal2, sigma):
     """
     Calculate the level of synchronization between two signals.
     """
     return (np.exp(-1 / (2 * sigma**2) * (signal1 - signal2)**2)).sum() / len(signal1)
+
 
 def los_range(signal1, signal2, range_start = 0.01, range_stop = 0.2, range_step = 0.005):
     los_dict = {}
@@ -389,6 +391,20 @@ def los_range(signal1, signal2, range_start = 0.01, range_stop = 0.2, range_step
 
 def calculate_metrics(worm_dicts: list, use_annotations: bool = True, return_average: bool = False):
     """
+    Calculate different metrics for the given worm data.
+    This function computes various statistical metrics between pairs of neurons
+    for each worm in the provided list of worm dictionaries. The metrics include
+    Pearson correlation, Spearman correlation, Kendall's tau, distance correlation,
+    and covariance. Optionally, it can exclude annotated data points and return
+    the average metrics across all worms.
+    
+    Parameters:
+    worm_dicts (list): A list of dictionaries, where each dictionary contains neuron data for a worm.
+    use_annotations (bool): If True, exclude data points where the annotation is 1. Default is True.
+    return_average (bool): If True, return the average metrics across all worms. Default is False.
+    Returns:
+    list or dict: If return_average is False, returns a list of dictionaries containing metrics for each worm.
+                  If return_average is True, returns a dictionary of averaged metrics across all worms.
     """
     all_metrics = []
 
@@ -436,5 +452,6 @@ def calculate_metrics(worm_dicts: list, use_annotations: bool = True, return_ave
             averaged_results[pair] = {metric: np.mean([result[metric] for result in pair_results]) for metric in pair_results[0].keys()}
         
         return averaged_results
+    
     else:
         return all_metrics
