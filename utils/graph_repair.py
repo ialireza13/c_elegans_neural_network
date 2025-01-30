@@ -13,6 +13,8 @@ import pandas as pd
 import itertools as itools
 from collections import defaultdict
 import time
+import os
+from contextlib import redirect_stdout
 
 ##precision parameter
 epsilon = .001
@@ -23,6 +25,10 @@ RMONLY = 2
 BOTHADDRM = 3
 
 charsep='\t'
+
+def suppress_gurobi_output():
+    """Temporarily suppress Gurobi output."""
+    return open(os.devnull, 'w')
 
 #this code calculates the minimal number of balanced partitions 
 ##gg should be an nx.DiGraph
@@ -96,15 +102,11 @@ def read_data(fname,colorfile,xlinks=None):
                 for c in color_dict.keys():
                     nc_tuples.append((p,q,c))
                     nc_tuples.append((q,p,c))
-                
-    # print("Created tuples")
 
     all_pairs = [(i, j) for i in nodes for j in nodes if i != j]
-    
-    print("created all pairs")
 
     if xlinks != None:
-        print(xlinks)
+        # print(xlinks)
         prohibited = pd.read_csv(xlinks,sep=charsep,index_col=[0,1],header=None)
         
         #directed graph!
@@ -115,8 +117,7 @@ def read_data(fname,colorfile,xlinks=None):
         avoid_edges, ae_edge_weights = gp.multidict(edges_to_avoid)
         
         not_e = {(p,q):1 for (p,q) in all_pairs if (p,q) not in avoid_edges}
-        not_edges,ne_weights = gp.multidict(not_e)
-        print("Read prohibited edges: "+str(len(edges_to_avoid))+" prohibited edges")        
+        not_edges,ne_weights = gp.multidict(not_e)      
     else:
         not_e = {(p,q):1 for (p,q) in all_pairs if (p,q) not in edges}
         not_edges,ne_weights = gp.multidict(not_e)
@@ -266,7 +267,7 @@ def CreateRMIP(inputs,env,Imbalance,HardFlag,FixedEdges,FixedNonEdges,AddRemoveF
     return rmip,rcons,rvars,remove_edge,add_edge,node_balance_pos,node_balance_neg
 
 def set_rmip(graphpath,colorpath,Imbalance,HardFlag,\
-                 FixedEdges,FixedNonEdges,InDegOneFlag,AddRemoveFlag,prohibit):
+                 FixedEdges,FixedNonEdges,InDegOneFlag,AddRemoveFlag,prohibit,verbose):
     
     # print("#######TIME TO SET UP#######\n")
     # Record the time before initializing the Gurobi environment
@@ -288,6 +289,7 @@ def set_rmip(graphpath,colorpath,Imbalance,HardFlag,\
     
     #initialize an environment
     env = gp.Env()
+    env.setParam('OutputFlag', 1 if verbose else 0)
     
     #create the model
     # print("Creating model")
@@ -297,7 +299,7 @@ def set_rmip(graphpath,colorpath,Imbalance,HardFlag,\
     # Record the time after initializing the environment
     end_time = time.time()
     setup_time = end_time - start_time
-    print('Setup time: ' + str(setup_time))
+    # print('Setup time: ' + str(setup_time))
 
     return rmip,rcons,rvars,setdict,color_sets,remove_edge,add_edge,node_balance_pos,node_balance_neg,setup_time
 
@@ -402,9 +404,7 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
         nb_p = rvars['nb_p']
         nb_n = rvars['nb_n']
         if feasible:
-            print(f'Maximum imbalance\n{m_nb.x}',file=f)            
-        else:
-            print("Maximum imbalance\n\n")
+            print(f'Maximum imbalance\n{m_nb.x}',file=f)
             
         print('Nonzero imbalances',file = f)    
         
@@ -459,28 +459,29 @@ def solve_and_write(graphpath,colorpath,rm_weight,add_weight,fname,rmip,rcons,\
     return gname,idealnum,EdgesRemoved,EdgesAdded,sumremovals,sumadds,outfname,rmip,rcons,rvars,G_result,executionTime
  
  
-def repair_network(color_file_path, instance_file_path, output_file_path, alpha, beta, prohibit_file_path=None):
-
-    from utils.settings import param_data
+def repair_network(color_file_path, instance_file_path, output_file_path, alpha, beta, prohibit_file_path=None, verbose=True):
     
-    rm_add_flag = param_data["rm_add_flag"]        
-    if rm_add_flag == 'add_only':
-        RM_AD = ADDONLY
-    elif rm_add_flag == "rm_only":
-        RM_AD = RMONLY
-    elif rm_add_flag == "both":
-        RM_AD = BOTHADDRM
+    with suppress_gurobi_output() as f, redirect_stdout(f):
+        from utils.settings import param_data
         
-        
-    rmip,B,C,D,E,F,G,H,I,Setup_time = set_rmip(instance_file_path,color_file_path,param_data["model_type"],\
-                                                param_data["hard_flag"],[],[],param_data["InDegOneFlag"],\
-                                                RM_AD,prohibit_file_path)
-        
-    rmip.setParam("MIPGap",param_data["mip_gap"])
+        rm_add_flag = param_data["rm_add_flag"]        
+        if rm_add_flag == 'add_only':
+            RM_AD = ADDONLY
+        elif rm_add_flag == "rm_only":
+            RM_AD = RMONLY
+        elif rm_add_flag == "both":
+            RM_AD = BOTHADDRM
+            
+            
+        rmip,B,C,D,E,F,G,H,I,Setup_time = set_rmip(instance_file_path,color_file_path,param_data["model_type"],\
+                                                    param_data["hard_flag"],[],[],param_data["InDegOneFlag"],\
+                                                    RM_AD,prohibit_file_path,verbose)
+            
+        rmip.setParam("MIPGap",param_data["mip_gap"])
 
-    gname,idealnum,EdgesRemoved,EdgesAdded,sumremovals,sumadds,outfname,rmip,rcons,rvars,G_result,executionTime = solve_and_write(instance_file_path,\
-                                    color_file_path,alpha,beta,output_file_path,rmip,B,C,D,E,F,G,H,I,\
-                                    "Linear",param_data["hard_flag"],[],[],param_data["InDegOneFlag"],prohibit_file_path,\
-                                    Save_info=param_data["save_output"],NetX=True)
-    
-    return EdgesRemoved,EdgesAdded, G_result
+        gname,idealnum,EdgesRemoved,EdgesAdded,sumremovals,sumadds,outfname,rmip,rcons,rvars,G_result,executionTime = solve_and_write(instance_file_path,\
+                                        color_file_path,alpha,beta,output_file_path,rmip,B,C,D,E,F,G,H,I,\
+                                        "Linear",param_data["hard_flag"],[],[],param_data["InDegOneFlag"],prohibit_file_path,\
+                                        Save_info=param_data["save_output"],NetX=True)
+        
+        return EdgesRemoved,EdgesAdded, G_result
