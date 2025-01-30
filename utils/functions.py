@@ -455,3 +455,21 @@ def calculate_metrics(worm_dicts: list, use_annotations: bool = True, return_ave
     
     else:
         return all_metrics
+    
+
+def modification_epsilon(removed_edges, added_edges, original_weights, how='edge_weight'):
+    
+    if how == 'edge_weight':
+        cost_removed = sum([original_weights[(original_weights[0] == edge[0]) & (original_weights[1] == edge[1])][2].values[0] for edge in removed_edges])
+        cost_added = len(added_edges)
+        denominator = original_weights[2].sum()
+    elif how == 'edge_count':
+        cost_removed = len(removed_edges)
+        cost_added = len(added_edges)
+        denominator = original_weights.shape[0]
+    elif how == 'edge_number':
+        cost_removed = len(removed_edges)
+        cost_added = len(added_edges)
+        denominator = original_weights.shape[0]
+    
+    return 1.0*(cost_removed+cost_added) / denominator
