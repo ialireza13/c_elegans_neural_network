@@ -1,593 +1,924 @@
 Total edges removed
-3
+24
 Edges removed
+AVAL AVDL
+VA02 AVAL
+AVDL DA01
+VA04 AVDL
+AVDR DA02
+AVDR DA03
+AVDR DA09
+AVDR VA03
+AVDR DA01
+AVDR VA11
+AVEL DA03
+AVEL VA03
+AVEL DA02
+AVEL DA04
+AVER VA03
+AVER VA04
+DA03 DA04
 DA04 DA03
 VA12 DA08
+VA12 DA09
 VA02 VA03
+VA03 VA04
+VA08 VA09
+VA12 VA11
 Total edges added
 14
 Edges added
-VA05 DA06
-AVER VA07
-AVA AVE
-DA08 DA07
-DA02 DA08
-DA05 VA01
-DA04 DA01
-VA11 VA03
-VA12 VA08
-DA09 VA12
-AVE AVD
-AVD AVA
-VA08 VA10
-VA07 DA05
+AVAR VA01
+AVAR VA07
+AVAR VA12
+AVAL VA01
+AVAL VA07
+AVDR DA06
+AVDL AVDR
+AVDL VA07
+AVDL DA06
+AVER AVDL
+AVER DA07
+AVEL VA06
+AVEL VA07
+AVEL DA07
 Maximum imbalance
 -0.0
 Nonzero imbalances
 
 Imbalances for each node and color
 Imbalances between DA02 and VA03
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and DA09
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and VA12
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and VA04
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and VA09
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and VA10
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and VA11
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and VA08
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA03
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and DA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA12
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA04
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA10
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA11
-Color 2
+Color 5
+Color 6
 Imbalances between VA02 and VA08
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA03
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and DA09
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA12
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA04
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA09
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA10
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA11
-Color 2
+Color 5
+Color 6
 Imbalances between DA03 and VA08
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA03
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and DA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA12
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA04
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA10
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA11
-Color 2
+Color 5
+Color 6
 Imbalances between VA07 and VA08
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA03
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and DA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA12
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA04
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA10
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA11
-Color 2
+Color 5
+Color 6
 Imbalances between VA05 and VA08
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA03
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and DA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA12
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA04
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA09
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA10
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA11
-Color 2
+Color 5
+Color 6
 Imbalances between VA06 and VA08
-Color 2
+Color 5
+Color 6
 Imbalances between DA02 and DA01
-Color 4
+Color 5
+Color 6
 Imbalances between DA02 and DA07
-Color 4
+Color 5
+Color 6
 Imbalances between DA02 and VA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA02 and DA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA02 and DA07
-Color 4
+Color 5
+Color 6
 Imbalances between VA02 and VA01
-Color 4
+Color 5
+Color 6
 Imbalances between DA03 and DA01
-Color 4
+Color 5
+Color 6
 Imbalances between DA03 and DA07
-Color 4
+Color 5
+Color 6
 Imbalances between DA03 and VA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA07 and DA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA07 and DA07
-Color 4
+Color 5
+Color 6
 Imbalances between VA07 and VA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA05 and DA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA05 and DA07
-Color 4
+Color 5
+Color 6
 Imbalances between VA05 and VA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA06 and DA01
-Color 4
+Color 5
+Color 6
 Imbalances between VA06 and DA07
-Color 4
+Color 5
+Color 6
 Imbalances between VA06 and VA01
-Color 4
+Color 5
+Color 6
 Imbalances between DA02 and DA08
-Color 1
+Color 5
+Color 6
 Imbalances between DA02 and DA05
-Color 1
+Color 5
+Color 6
 Imbalances between DA02 and DA04
-Color 1
+Color 5
+Color 6
 Imbalances between DA02 and DA06
-Color 1
+Color 5
+Color 6
 Imbalances between VA02 and DA08
-Color 1
+Color 5
+Color 6
 Imbalances between VA02 and DA05
-Color 1
+Color 5
+Color 6
 Imbalances between VA02 and DA04
-Color 1
+Color 5
+Color 6
 Imbalances between VA02 and DA06
-Color 1
+Color 5
+Color 6
 Imbalances between DA03 and DA08
-Color 1
+Color 5
+Color 6
 Imbalances between DA03 and DA05
-Color 1
+Color 5
+Color 6
 Imbalances between DA03 and DA04
-Color 1
+Color 5
+Color 6
 Imbalances between DA03 and DA06
-Color 1
+Color 5
+Color 6
 Imbalances between VA07 and DA08
-Color 1
+Color 5
+Color 6
 Imbalances between VA07 and DA05
-Color 1
+Color 5
+Color 6
 Imbalances between VA07 and DA04
-Color 1
+Color 5
+Color 6
 Imbalances between VA07 and DA06
-Color 1
+Color 5
+Color 6
 Imbalances between VA05 and DA08
-Color 1
+Color 5
+Color 6
 Imbalances between VA05 and DA05
-Color 1
+Color 5
+Color 6
 Imbalances between VA05 and DA04
-Color 1
+Color 5
+Color 6
 Imbalances between VA05 and DA06
-Color 1
+Color 5
+Color 6
 Imbalances between VA06 and DA08
-Color 1
+Color 5
+Color 6
 Imbalances between VA06 and DA05
-Color 1
+Color 5
+Color 6
 Imbalances between VA06 and DA04
-Color 1
+Color 5
+Color 6
 Imbalances between VA06 and DA06
-Color 1
-Imbalances between DA02 and AVE
-Color 7
-Imbalances between VA02 and AVE
-Color 7
-Imbalances between DA03 and AVE
-Color 7
-Imbalances between VA07 and AVE
-Color 7
-Imbalances between VA05 and AVE
-Color 7
-Imbalances between VA06 and AVE
-Color 7
-Imbalances between DA02 and AVD
 Color 5
-Imbalances between VA02 and AVD
+Color 6
+Imbalances between DA02 and AVEL
 Color 5
-Imbalances between DA03 and AVD
+Color 6
+Color 7
+Imbalances between DA02 and AVER
 Color 5
-Imbalances between VA07 and AVD
+Color 6
+Color 7
+Imbalances between VA02 and AVEL
 Color 5
-Imbalances between VA05 and AVD
+Color 6
+Color 7
+Imbalances between VA02 and AVER
 Color 5
-Imbalances between VA06 and AVD
+Color 6
+Color 7
+Imbalances between DA03 and AVEL
 Color 5
-Imbalances between DA02 and AVA
 Color 6
-Imbalances between VA02 and AVA
+Color 7
+Imbalances between DA03 and AVER
+Color 5
 Color 6
-Imbalances between DA03 and AVA
+Color 7
+Imbalances between VA07 and AVEL
+Color 5
 Color 6
-Imbalances between VA07 and AVA
+Color 7
+Imbalances between VA07 and AVER
+Color 5
 Color 6
-Imbalances between VA05 and AVA
+Color 7
+Imbalances between VA05 and AVEL
+Color 5
 Color 6
-Imbalances between VA06 and AVA
+Color 7
+Imbalances between VA05 and AVER
+Color 5
 Color 6
+Color 7
+Imbalances between VA06 and AVEL
+Color 5
+Color 6
+Color 7
+Imbalances between VA06 and AVER
+Color 5
+Color 6
+Color 7
+Imbalances between DA02 and AVDL
+Color 7
+Imbalances between DA02 and AVDR
+Color 7
+Imbalances between VA02 and AVDL
+Color 7
+Imbalances between VA02 and AVDR
+Color 7
+Imbalances between DA03 and AVDL
+Color 7
+Imbalances between DA03 and AVDR
+Color 7
+Imbalances between VA07 and AVDL
+Color 7
+Imbalances between VA07 and AVDR
+Color 7
+Imbalances between VA05 and AVDL
+Color 7
+Imbalances between VA05 and AVDR
+Color 7
+Imbalances between VA06 and AVDL
+Color 7
+Imbalances between VA06 and AVDR
+Color 7
+Imbalances between DA02 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between DA02 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA02 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA02 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between DA03 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between DA03 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA07 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA07 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA05 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA05 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA06 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA06 and AVAR
+Color 5
+Color 6
+Color 7
 Imbalances between VA03 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA03 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA03 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between DA09 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between DA09 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between DA09 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA12 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA12 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA12 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA04 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA04 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA04 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA09 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA09 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA09 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA10 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA10 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA10 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA11 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA11 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA11 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA08 and DA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA08 and DA07
-Color 2
-Color 4
+Color 5
 Imbalances between VA08 and VA01
-Color 2
-Color 4
+Color 5
 Imbalances between VA03 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA03 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA03 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA03 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between DA09 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between DA09 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between DA09 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between DA09 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between VA12 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA12 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA12 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA12 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between VA04 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA04 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA04 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA04 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between VA09 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA09 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA09 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA09 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between VA10 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA10 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA10 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA10 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between VA11 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA11 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA11 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA11 and DA06
-Color 1
-Color 2
+Color 6
 Imbalances between VA08 and DA08
-Color 1
-Color 2
+Color 6
 Imbalances between VA08 and DA05
-Color 1
-Color 2
+Color 6
 Imbalances between VA08 and DA04
-Color 1
-Color 2
+Color 6
 Imbalances between VA08 and DA06
-Color 1
-Color 2
-Imbalances between VA03 and AVE
-Color 2
-Color 7
-Imbalances between DA09 and AVE
-Color 2
-Color 7
-Imbalances between VA12 and AVE
-Color 2
-Color 7
-Imbalances between VA04 and AVE
-Color 2
-Color 7
-Imbalances between VA09 and AVE
-Color 2
-Color 7
-Imbalances between VA10 and AVE
-Color 2
-Color 7
-Imbalances between VA11 and AVE
-Color 2
-Color 7
-Imbalances between VA08 and AVE
-Color 2
-Color 7
-Imbalances between VA03 and AVD
-Color 2
-Color 5
-Imbalances between DA09 and AVD
-Color 2
-Color 5
-Imbalances between VA12 and AVD
-Color 2
-Color 5
-Imbalances between VA04 and AVD
-Color 2
-Color 5
-Imbalances between VA09 and AVD
-Color 2
-Color 5
-Imbalances between VA10 and AVD
-Color 2
-Color 5
-Imbalances between VA11 and AVD
-Color 2
-Color 5
-Imbalances between VA08 and AVD
-Color 2
-Color 5
-Imbalances between VA03 and AVA
-Color 2
 Color 6
-Imbalances between DA09 and AVA
-Color 2
+Imbalances between VA03 and AVEL
+Color 7
+Imbalances between VA03 and AVER
+Color 7
+Imbalances between DA09 and AVEL
+Color 7
+Imbalances between DA09 and AVER
+Color 7
+Imbalances between VA12 and AVEL
+Color 7
+Imbalances between VA12 and AVER
+Color 7
+Imbalances between VA04 and AVEL
+Color 7
+Imbalances between VA04 and AVER
+Color 7
+Imbalances between VA09 and AVEL
+Color 7
+Imbalances between VA09 and AVER
+Color 7
+Imbalances between VA10 and AVEL
+Color 7
+Imbalances between VA10 and AVER
+Color 7
+Imbalances between VA11 and AVEL
+Color 7
+Imbalances between VA11 and AVER
+Color 7
+Imbalances between VA08 and AVEL
+Color 7
+Imbalances between VA08 and AVER
+Color 7
+Imbalances between VA03 and AVDL
+Color 5
 Color 6
-Imbalances between VA12 and AVA
-Color 2
+Color 7
+Imbalances between VA03 and AVDR
+Color 5
 Color 6
-Imbalances between VA04 and AVA
-Color 2
+Color 7
+Imbalances between DA09 and AVDL
+Color 5
 Color 6
-Imbalances between VA09 and AVA
-Color 2
+Color 7
+Imbalances between DA09 and AVDR
+Color 5
 Color 6
-Imbalances between VA10 and AVA
-Color 2
+Color 7
+Imbalances between VA12 and AVDL
+Color 5
 Color 6
-Imbalances between VA11 and AVA
-Color 2
+Color 7
+Imbalances between VA12 and AVDR
+Color 5
 Color 6
-Imbalances between VA08 and AVA
-Color 2
+Color 7
+Imbalances between VA04 and AVDL
+Color 5
 Color 6
+Color 7
+Imbalances between VA04 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between VA09 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between VA09 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between VA10 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between VA10 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between VA11 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between VA11 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between VA08 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between VA08 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between VA03 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA03 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between DA09 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between DA09 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA12 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA12 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA04 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA04 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA09 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA09 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA10 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA10 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA11 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA11 and AVAR
+Color 5
+Color 6
+Color 7
+Imbalances between VA08 and AVAL
+Color 5
+Color 6
+Color 7
+Imbalances between VA08 and AVAR
+Color 5
+Color 6
+Color 7
 Imbalances between DA01 and DA08
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA01 and DA05
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA01 and DA04
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA01 and DA06
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA07 and DA08
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA07 and DA05
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA07 and DA04
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between DA07 and DA06
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between VA01 and DA08
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between VA01 and DA05
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between VA01 and DA04
-Color 1
-Color 4
+Color 5
+Color 6
 Imbalances between VA01 and DA06
-Color 1
-Color 4
-Imbalances between DA01 and AVE
-Color 4
-Color 7
-Imbalances between DA07 and AVE
-Color 4
-Color 7
-Imbalances between VA01 and AVE
-Color 4
-Color 7
-Imbalances between DA01 and AVD
-Color 4
 Color 5
-Imbalances between DA07 and AVD
-Color 4
-Color 5
-Imbalances between VA01 and AVD
-Color 4
-Color 5
-Imbalances between DA01 and AVA
-Color 4
 Color 6
-Imbalances between DA07 and AVA
-Color 4
-Color 6
-Imbalances between VA01 and AVA
-Color 4
-Color 6
-Imbalances between DA08 and AVE
-Color 1
-Color 7
-Imbalances between DA05 and AVE
-Color 1
-Color 7
-Imbalances between DA04 and AVE
-Color 1
-Color 7
-Imbalances between DA06 and AVE
-Color 1
-Color 7
-Imbalances between DA08 and AVD
-Color 1
-Color 5
-Imbalances between DA05 and AVD
-Color 1
-Color 5
-Imbalances between DA04 and AVD
-Color 1
-Color 5
-Imbalances between DA06 and AVD
-Color 1
-Color 5
-Imbalances between DA08 and AVA
-Color 1
-Color 6
-Imbalances between DA05 and AVA
-Color 1
-Color 6
-Imbalances between DA04 and AVA
-Color 1
-Color 6
-Imbalances between DA06 and AVA
-Color 1
-Color 6
-Imbalances between AVE and AVD
+Imbalances between DA01 and AVEL
 Color 5
 Color 7
-Imbalances between AVE and AVA
+Imbalances between DA01 and AVER
+Color 5
+Color 7
+Imbalances between DA07 and AVEL
+Color 5
+Color 7
+Imbalances between DA07 and AVER
+Color 5
+Color 7
+Imbalances between VA01 and AVEL
+Color 5
+Color 7
+Imbalances between VA01 and AVER
+Color 5
+Color 7
+Imbalances between DA01 and AVDL
+Color 5
 Color 6
 Color 7
-Imbalances between AVD and AVA
+Imbalances between DA01 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between DA07 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between DA07 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between VA01 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between VA01 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between DA01 and AVAL
+Color 6
+Color 7
+Imbalances between DA01 and AVAR
+Color 6
+Color 7
+Imbalances between DA07 and AVAL
+Color 6
+Color 7
+Imbalances between DA07 and AVAR
+Color 6
+Color 7
+Imbalances between VA01 and AVAL
+Color 6
+Color 7
+Imbalances between VA01 and AVAR
+Color 6
+Color 7
+Imbalances between DA08 and AVEL
+Color 6
+Color 7
+Imbalances between DA08 and AVER
+Color 6
+Color 7
+Imbalances between DA05 and AVEL
+Color 6
+Color 7
+Imbalances between DA05 and AVER
+Color 6
+Color 7
+Imbalances between DA04 and AVEL
+Color 6
+Color 7
+Imbalances between DA04 and AVER
+Color 6
+Color 7
+Imbalances between DA06 and AVEL
+Color 6
+Color 7
+Imbalances between DA06 and AVER
+Color 6
+Color 7
+Imbalances between DA08 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between DA08 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between DA05 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between DA05 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between DA04 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between DA04 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between DA06 and AVDL
+Color 5
+Color 6
+Color 7
+Imbalances between DA06 and AVDR
+Color 5
+Color 6
+Color 7
+Imbalances between DA08 and AVAL
+Color 5
+Color 7
+Imbalances between DA08 and AVAR
+Color 5
+Color 7
+Imbalances between DA05 and AVAL
+Color 5
+Color 7
+Imbalances between DA05 and AVAR
+Color 5
+Color 7
+Imbalances between DA04 and AVAL
+Color 5
+Color 7
+Imbalances between DA04 and AVAR
+Color 5
+Color 7
+Imbalances between DA06 and AVAL
+Color 5
+Color 7
+Imbalances between DA06 and AVAR
+Color 5
+Color 7
+Imbalances between AVEL and AVDL
+Color 5
+Color 6
+Imbalances between AVEL and AVDR
+Color 5
+Color 6
+Imbalances between AVER and AVDL
+Color 5
+Color 6
+Imbalances between AVER and AVDR
+Color 5
+Color 6
+Imbalances between AVEL and AVAL
+Color 5
+Color 6
+Imbalances between AVEL and AVAR
+Color 5
+Color 6
+Imbalances between AVER and AVAL
+Color 5
+Color 6
+Imbalances between AVER and AVAR
+Color 5
+Color 6
+Imbalances between AVDL and AVAL
+Color 5
+Color 6
+Imbalances between AVDL and AVAR
+Color 5
+Color 6
+Imbalances between AVDR and AVAL
+Color 5
+Color 6
+Imbalances between AVDR and AVAR
 Color 5
 Color 6
 
@@ -713,9 +1044,12 @@ DA05 4
 DA04 4
 VA08 2
 DA06 4
-AVE 5
-AVD 6
-AVA 7
+AVEL 5
+AVER 5
+AVDL 6
+AVDR 6
+AVAL 7
+AVAR 7
 Prohibited edges
  1 2
 AVER VA12 1.0
