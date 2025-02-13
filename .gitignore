@@ -4,3 +4,4 @@
 temp*
 *.output.txt
 *.out.graph.txt
+outputs/
