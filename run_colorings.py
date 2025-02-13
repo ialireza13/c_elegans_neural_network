@@ -241,7 +241,7 @@ import pandas as pd
 import numpy as np
 from utils.graph_repair import repair_network
 
-n_shuffle = 2000
+n_shuffle = 5000
 
 res = {}
 
@@ -276,10 +276,10 @@ res = {}
 #             pd.DataFrame(res).to_csv('res.csv')
 
 
-for collapsed in ['collapsed']:
+for collapsed in ['collapsed', 'uncollapsed']:
     print(f'####### running, {collapsed}...')
     df_weights = pd.read_csv(f'connectomes/{collapsed}_varshney_weights.txt', sep='\t', header=None)
-    for n_cluster in tqdm([3,4,5,6,7,8,9]):
+    for n_cluster in tqdm([3,4,5,6,7,8]):
         print(f'############### cons, {str(n_cluster)}...')
         df = pd.read_csv(f"colorings/cons_{n_cluster}_colors_{collapsed}.txt", sep='\t', header=None)
         res['cons-' + str(n_cluster) + f'-{collapsed}'] = {}
@@ -296,11 +296,11 @@ for collapsed in ['collapsed']:
                     shuffled_results.append(modification_epsilon(EdgesRemoved, EdgesAdded, df_weights, how='edge_weight'))
                 
                 repair = 1e9
-                for n in range(100):
+                for n in range(1000):
                     EdgesRemoved, EdgesAdded, G_result = repair_network(f"colorings/cons_{str(n_cluster)}_colors_{collapsed}.txt", f"connectomes/{collapsed}_varshney.graph.txt", f"outputs/{collapsed}_consensous_{str(n_cluster)}_colors_o_", a, b, prohibit_file_path=f"connectomes/{collapsed}_prohibited_edges.txt")
                     repair_percentage = modification_epsilon(EdgesRemoved, EdgesAdded, df_weights, how='edge_weight')
                     repair = min(repair, repair_percentage)
                 res['cons-' + str(n_cluster) + f'-{collapsed}'][(a,b)] = (repair, 
                                                                     1.0*(np.array(shuffled_results) < repair).sum() / n_shuffle)
                 print(f'a={a}, b={b}, epsilon={repair}, p_val={1.0*(np.array(shuffled_results) < repair).sum() / n_shuffle}')
-        pd.DataFrame(res).to_csv(f'res_cons.csv')
+        pd.DataFrame(res).to_csv(f'res_cons_new_{collapsed}.csv')
