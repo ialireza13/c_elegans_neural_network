@@ -2,3 +2,5 @@
 .DS_Store
 *.log
 temp*
+*.output.txt
+*.out.graph.txt
