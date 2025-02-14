@@ -68,7 +68,7 @@ def get_colormap(fname='utils/colormap_parula.txt'):
         
 #     return worm_dicts
 
-def read_input_mat_file(pathname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False):
+def read_input_mat_file(pathname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False, meanmax_thresh=None):
     dataset = [pd.read_csv(pathname + '/' + x) for x in sorted(os.listdir(pathname), key=lambda x: int(x.split('_')[1].split('.')[0]))]
 
     neuron_names = []
@@ -82,7 +82,7 @@ def read_input_mat_file(pathname: str, remove_trend: bool=False, smooth_spikes: 
         worm_dict = {}
         for neuron in neuron_names:
             signal = dataset[worm_id][neuron].values
-            if (signal.max() - signal.mean()) > 0.25:
+            if not meanmax_thresh or (signal.max() - signal.mean()) > meanmax_thresh:
                 worm_dict[neuron] = signal
                 if remove_trend:
                     worm_dict[neuron] = detrend(worm_dict[neuron])
