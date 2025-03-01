@@ -9,6 +9,7 @@ import gurobipy as gp
 from gurobipy import GRB
 from gurobipy import abs_
 from gurobipy import quicksum
+import random
 import pandas as pd
 import itertools as itools
 from collections import defaultdict
@@ -478,6 +479,7 @@ def repair_network(color_file_path, instance_file_path, output_file_path, alpha,
                                                     RM_AD,prohibit_file_path,verbose)
             
         rmip.setParam("MIPGap",param_data["mip_gap"])
+        rmip.setParam("Seed", random.randint(1, 1000000))
 
         gname,idealnum,EdgesRemoved,EdgesAdded,sumremovals,sumadds,outfname,rmip,rcons,rvars,G_result,executionTime = solve_and_write(instance_file_path,\
                                         color_file_path,alpha,beta,output_file_path,rmip,B,C,D,E,F,G,H,I,\

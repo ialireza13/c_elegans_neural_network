@@ -5,7 +5,6 @@ from community import community_louvain
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, spearmanr, kendalltau
 import pingouin
-from scipy.io import loadmat
 from scipy.signal import detrend
 from tqdm import tqdm
 from matplotlib.colors import ListedColormap
@@ -82,7 +81,7 @@ def read_input_mat_file(pathname: str, remove_trend: bool=False, smooth_spikes: 
         worm_dict = {}
         for neuron in neuron_names:
             signal = dataset[worm_id][neuron].values
-            if not meanmax_thresh or (signal.max() - signal.mean()) > meanmax_thresh:
+            if not meanmax_thresh or (signal.max() - signal.mean()) > meanmax_thresh or neuron=='VA10':
                 worm_dict[neuron] = signal
                 if remove_trend:
                     worm_dict[neuron] = detrend(worm_dict[neuron])
@@ -530,3 +529,111 @@ def modification_epsilon(removed_edges, added_edges, original_weights, how='edge
         denominator = 365
     
     return 1.0*(cost_removed+cost_added) / denominator
+
+
+def shuffle_classes_preserving_groups(df):
+    
+    col1 = df.columns[0]
+    col2 = df.columns[1]
+    # Make a copy of the DataFrame so as not to modify the original.
+    df_shuffled = df.copy()
+
+    # Compute the original counts of each class.
+    class_counts = df[col2].value_counts().to_dict()
+
+    # Define the prefixes that must be kept together.
+    prefixes = ['AVD', 'AVE', 'AVA']
+    
+    # For each prefix, compute the number of rows (if any) that have that prefix.
+    group_counts = {}
+    for prefix in prefixes:
+        mask = df_shuffled[col1].str.startswith(prefix)
+        count = mask.sum()
+        if count > 0:
+            group_counts[prefix] = count
+
+    # Create a mask for unconstrained rows (those not starting with any of the prefixes).
+    mask_unconstrained = ~df_shuffled[col1].str.startswith('AVD') & \
+                         ~df_shuffled[col1].str.startswith('AVE') & \
+                         ~df_shuffled[col1].str.startswith('AVA')
+    
+    # Copy the class counts into a mutable dict that tracks how many slots are left.
+    available_slots = class_counts.copy()
+
+    # Dictionary to hold the new class assignment for each prefix group.
+    group_assignment = {}
+
+    # For each constrained group, randomly assign a class that has enough available slots.
+    for prefix, count in group_counts.items():
+        # Find classes with at least 'count' slots remaining.
+        candidate_classes = [cls for cls, avail in available_slots.items() if avail >= count]
+        if not candidate_classes:
+            raise ValueError(f"No available class can accommodate the group {prefix} with {count} items.")
+        # Randomly choose one of the candidate classes.
+        chosen_class = np.random.choice(candidate_classes)
+        group_assignment[prefix] = chosen_class
+        # Deduct the group's size from the available slots for the chosen class.
+        available_slots[chosen_class] -= count
+
+    # For unconstrained rows, build a list of class labels according to the remaining available slots.
+    unconstrained_labels = []
+    for cls, avail in available_slots.items():
+        unconstrained_labels.extend([cls] * avail)
+    # Shuffle these labels randomly.
+    np.random.shuffle(unconstrained_labels)
+    
+    # Now, assign new class labels to each row.
+    new_class_assignments = []
+    for _, row in df_shuffled.iterrows():
+        # If the row is part of one of the constrained groups, assign its predetermined new class.
+        assigned = False
+        for prefix, new_cls in group_assignment.items():
+            if row[col1].startswith(prefix):
+                new_class_assignments.append(new_cls)
+                assigned = True
+                break
+        # Otherwise, assign one label from the unconstrained labels.
+        if not assigned:
+            new_class_assignments.append(unconstrained_labels.pop(0))
+    
+    # Update the DataFrame with the new class labels.
+    df_shuffled[col2] = new_class_assignments
+    return df_shuffled
+
+
+def check_sampling_needed(samples, min_samples=100, max_samples=10**6, epsilon=0.001, window=10):
+    """
+    Determines whether more samples are needed based on stabilization of mean and standard deviation.
+
+    Parameters:
+    - samples (list): List of all previous sample outputs.
+    - min_samples (int): Minimum number of samples before checking for stability.
+    - max_samples (int): Maximum number of samples allowed before stopping.
+    - epsilon (float): Threshold for stabilization (relative change in mean/std).
+    - window (int): Number of recent iterations to check for stabilization.
+
+    Returns:
+    - bool: True if more samples are needed, False if stable or max samples reached.
+    """
+    num_samples = len(samples)
+    
+    # Stop if max samples are reached
+    if num_samples >= max_samples:
+        return False
+
+    # Need more samples if we haven't reached min_samples yet
+    if num_samples < min_samples:
+        return True
+
+    # Compute recent statistics
+    recent_means = [np.mean(samples[i:]) for i in range(-window, 0)]
+    recent_stds = [np.std(samples[i:], ddof=1) for i in range(-window, 0)]
+    
+    # Check for stabilization
+    mean_change = np.abs(recent_means[-1] - recent_means[0]) / recent_means[-1]
+    std_change = np.abs(recent_stds[-1] - recent_stds[0]) / recent_stds[-1]
+
+    if mean_change < epsilon and std_change < epsilon:
+        return False  # Stop sampling
+
+    return True  # Continue sampling
