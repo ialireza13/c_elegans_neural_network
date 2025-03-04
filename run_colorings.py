@@ -9,14 +9,16 @@ import json
 from utils.graph_repair import repair_network
 import matplotlib.patches as patches
 
-# PLOT = True
-# RECALCULATE = False
-# MUTUAL_INFO = True
+PLOT = False
+RECALCULATE = True
+MUTUAL_INFO = False
 
 # cmap = get_colormap()
 
-# input_file = 'PNAS_8worm_dataset_v2.mat'
-# worm_dicts = read_input_mat_file(input_file, remove_trend=True, smooth_spikes=True, mean_zero=True)
+# input_file = 'dataset/old'
+
+
+# worm_dicts = read_input_mat_file(input_file, remove_trend=False, smooth_spikes=False, mean_zero=False)
     
 # averaged_results = calculate_metrics(worm_dicts, use_annotations = True, return_average = True)
 
@@ -79,7 +81,7 @@ import matplotlib.patches as patches
 #         plt.close()
 
 # if not RECALCULATE:
-#     with open('precomputed/all_cliques_detrend_demean_despike.json', 'r') as file:
+#     with open('precomputed/all_cliques_detrend_demean_despike_noprocess.json', 'r') as file:
 #         # Load the JSON data from the file
 #         all_cliques = json.load(file)
 # else:
@@ -100,37 +102,37 @@ import matplotlib.patches as patches
 #             else:
 #                 break
             
-#             with open(f'colorings/{method[:4]}_{name}_colors_collapsed.txt', 'w') as f:
-#                 for idx, clique in enumerate(clusters):
-#                     for node in clique:
-#                         print(f'{node}\t{idx}', file=f)
+            # with open(f'colorings/{method[:4]}_{name}_colors_collapsed.txt', 'w') as f:
+            #     for idx, clique in enumerate(clusters):
+            #         for node in clique:
+            #             print(f'{node}\t{idx}', file=f)
                         
-#                 print(f'AVE\t{idx+1}', file=f)
+            #     print(f'AVE\t{idx+1}', file=f)
                 
-#                 print(f'AVD\t{idx+2}', file=f)
+            #     print(f'AVD\t{idx+2}', file=f)
                 
-#                 print(f'AVA\t{idx+3}', file=f)
+            #     print(f'AVA\t{idx+3}', file=f)
                 
-#             with open(f'colorings/{method[:4]}_{name}_colors_uncollapsed.txt', 'w') as f:
-#                 for idx, clique in enumerate(clusters):
-#                     for node in clique:
-#                         print(f'{node}\t{idx}', file=f)
+            # with open(f'colorings/{method[:4]}_{name}_colors_uncollapsed.txt', 'w') as f:
+            #     for idx, clique in enumerate(clusters):
+            #         for node in clique:
+            #             print(f'{node}\t{idx}', file=f)
                     
-#                 print(f'AVEL\t{idx+1}', file=f)
-#                 print(f'AVER\t{idx+1}', file=f)
+            #     print(f'AVEL\t{idx+1}', file=f)
+            #     print(f'AVER\t{idx+1}', file=f)
                 
-#                 print(f'AVDL\t{idx+2}', file=f)
-#                 print(f'AVDR\t{idx+2}', file=f)
+            #     print(f'AVDL\t{idx+2}', file=f)
+            #     print(f'AVDR\t{idx+2}', file=f)
                 
-#                 print(f'AVAL\t{idx+3}', file=f)
-#                 print(f'AVAR\t{idx+3}', file=f)
+            #     print(f'AVAL\t{idx+3}', file=f)
+            #     print(f'AVAR\t{idx+3}', file=f)
         
-#     # Convert the list to a JSON string
-#     json_string = json.dumps(all_cliques)
+    # Convert the list to a JSON string
+    # json_string = json.dumps(all_cliques)
 
-#     # Save the JSON string to a file
-#     with open("precomputed/all_cliques_detrend_demean_despike.json", "w") as f:
-#         f.write(json_string)
+    # # Save the JSON string to a file
+    # with open("precomputed/all_cliques_noprocess.json", "w") as f:
+    #     f.write(json_string)
         
 # if MUTUAL_INFO:
 #     def create_point_cluster_mapping(clustering_results, columns):
@@ -235,15 +237,11 @@ import matplotlib.patches as patches
         
 # ##############
 
-print('######## Calculating repairs...')
+# print('######## Calculating repairs...')
 
 import pandas as pd
 import numpy as np
 from utils.graph_repair import repair_network
-
-n_shuffle = 5000
-
-res = {}
 
 # for collapsed in ['collapsed', 'uncollapsed']:
 #     df_weights = pd.read_csv(f'connectomes/{collapsed}_varshney_weights.txt', sep='\t', header=None)
@@ -278,8 +276,11 @@ res = {}
 
 for collapsed in ['collapsed', 'uncollapsed']:
     print(f'####### running, {collapsed}...')
+    # prohibit_file = f"connectomes/{collapsed}_prohibited_edges.txt"
+    prohibit_file = None
     df_weights = pd.read_csv(f'connectomes/{collapsed}_varshney_weights.txt', sep='\t', header=None)
-    for n_cluster in tqdm([3,4,5,6,7,8]):
+    res = {}
+    for n_cluster in [3,4,5,6,7,8,9,10,11,12]:
         print(f'############### cons, {str(n_cluster)}...')
         df = pd.read_csv(f"colorings/cons_{n_cluster}_colors_{collapsed}.txt", sep='\t', header=None)
         res['cons-' + str(n_cluster) + f'-{collapsed}'] = {}
@@ -287,20 +288,29 @@ for collapsed in ['collapsed', 'uncollapsed']:
             for b in [1,2]:
                 
                 shuffled_results = []
-                for n in range(n_shuffle):
-                    shuffled_values = np.random.permutation(df.loc[:, 1].values)
-                    df_copy = df.copy()
-                    df_copy.loc[:, 1] = shuffled_values
-                    df_copy.to_csv(f"colorings/temp_shuffle.txt", sep='\t', header=None, index=None)
-                    EdgesRemoved, EdgesAdded, G_result = repair_network(f"colorings/temp_shuffle.txt", f"connectomes/{collapsed}_varshney.graph.txt", f"outputs/temp_shuffle_o_", a, b, prohibit_file_path=f"connectomes/{collapsed}_prohibited_edges.txt")
-                    shuffled_results.append(modification_epsilon(EdgesRemoved, EdgesAdded, df_weights, how='edge_weight'))
-                
+                while True:
+                    for i in range(500):
+                        while True:
+                            try:
+                                df_copy = shuffle_classes_preserving_groups(df)
+                                df_copy.to_csv(f"colorings/temp_shuffle.txt", sep='\t', header=None, index=None)
+                                EdgesRemoved, EdgesAdded, G_result = repair_network(f"colorings/temp_shuffle.txt", f"connectomes/{collapsed}_varshney.graph.txt", f"outputs/temp_shuffle_o_", a, b, prohibit_file_path=prohibit_file)
+                                shuffled_results.append(modification_epsilon(EdgesRemoved, EdgesAdded, df_weights, how='edge_weight_new'))
+                                break
+                            except:
+                                continue
+                    
+                    if not check_stability(shuffled_results, 0.001, 10000, 1000, 500):
+                        print(f'N samples = {len(shuffled_results)}')
+                        print(f'{np.mean(shuffled_results)}, {np.std(shuffled_results)}')
+                        break
+                    
                 repair = 1e9
                 for n in range(1000):
-                    EdgesRemoved, EdgesAdded, G_result = repair_network(f"colorings/cons_{str(n_cluster)}_colors_{collapsed}.txt", f"connectomes/{collapsed}_varshney.graph.txt", f"outputs/{collapsed}_consensous_{str(n_cluster)}_colors_o_", a, b, prohibit_file_path=f"connectomes/{collapsed}_prohibited_edges.txt")
-                    repair_percentage = modification_epsilon(EdgesRemoved, EdgesAdded, df_weights, how='edge_weight')
+                    EdgesRemoved, EdgesAdded, G_result = repair_network(f"colorings/cons_{str(n_cluster)}_colors_{collapsed}.txt", f"connectomes/{collapsed}_varshney.graph.txt", f"outputs/{collapsed}_consensous_{str(n_cluster)}_colors_o_", a, b, prohibit_file_path=prohibit_file)
+                    repair_percentage = modification_epsilon(EdgesRemoved, EdgesAdded, df_weights, how='edge_weight_new')
                     repair = min(repair, repair_percentage)
                 res['cons-' + str(n_cluster) + f'-{collapsed}'][(a,b)] = (repair, 
-                                                                    1.0*(np.array(shuffled_results) < repair).sum() / n_shuffle)
-                print(f'a={a}, b={b}, epsilon={repair}, p_val={1.0*(np.array(shuffled_results) < repair).sum() / n_shuffle}')
-        pd.DataFrame(res).to_csv(f'res_cons_new_{collapsed}.csv')
+                                                                    1.0*(np.array(shuffled_results) < repair).sum() / len(shuffled_results))
+                print(f'a={a}, b={b}, epsilon={repair}, p_val={1.0*(np.array(shuffled_results) < repair).sum() / len(shuffled_results)}')
+        pd.DataFrame(res).to_csv(f'res_cons_none_{collapsed}.csv')

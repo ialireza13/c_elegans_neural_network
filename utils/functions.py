@@ -601,39 +601,36 @@ def shuffle_classes_preserving_groups(df):
     return df_shuffled
 
 
-def check_sampling_needed(samples, min_samples=100, max_samples=10**6, epsilon=0.001, window=10):
+def check_stability(samples, epsilon=1e-3, max_samples=10000, min_size=1000, window_size=50):
     """
-    Determines whether more samples are needed based on stabilization of mean and standard deviation.
-
+    Checks if the mean and standard deviation of a list of samples have stabilized.
+    
     Parameters:
-    - samples (list): List of all previous sample outputs.
-    - min_samples (int): Minimum number of samples before checking for stability.
-    - max_samples (int): Maximum number of samples allowed before stopping.
-    - epsilon (float): Threshold for stabilization (relative change in mean/std).
-    - window (int): Number of recent iterations to check for stabilization.
+    - samples (list or np.array): The list of sample values.
+    - epsilon (float): The tolerance for stabilization. Default is 1e-3.
+    - max_samples (int): The maximum number of samples before stopping. Default is 1000.
+    - window_size (int): The number of recent samples to check stabilization. Default is 50.
 
     Returns:
-    - bool: True if more samples are needed, False if stable or max samples reached.
+    - bool: True if more sampling is required, False otherwise.
     """
-    num_samples = len(samples)
     
-    # Stop if max samples are reached
-    if num_samples >= max_samples:
-        return False
+    if len(samples) >= max_samples:
+        return False  # Stop sampling if we exceed max_samples
 
-    # Need more samples if we haven't reached min_samples yet
-    if num_samples < min_samples:
-        return True
+    if len(samples) < min_size:
+        return True  # Not enough samples to check stabilization
 
-    # Compute recent statistics
-    recent_means = [np.mean(samples[i:]) for i in range(-window, 0)]
-    recent_stds = [np.std(samples[i:], ddof=1) for i in range(-window, 0)]
-    
-    # Check for stabilization
-    mean_change = np.abs(recent_means[-1] - recent_means[0]) / recent_means[-1]
-    std_change = np.abs(recent_stds[-1] - recent_stds[0]) / recent_stds[-1]
+    recent_samples = samples[-window_size:]
+    old_samples = samples[-(2 * window_size):-window_size] if len(samples) >= 2 * window_size else samples[:window_size]
 
-    if mean_change < epsilon and std_change < epsilon:
-        return False  # Stop sampling
+    mean_recent = np.mean(recent_samples)
+    std_recent = np.std(recent_samples)
 
-    return True  # Continue sampling
+    mean_old = np.mean(old_samples)
+    std_old = np.std(old_samples)
+
+    mean_diff = abs(mean_recent - mean_old)
+    std_diff = abs(std_recent - std_old)
+
+    return mean_diff > epsilon or std_diff > epsilon
