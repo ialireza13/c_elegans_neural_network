@@ -21,15 +21,15 @@ VA12 VA11
 Total edges added
 9
 Edges added
-AVD DA06
-AVD AVE
-AVD VA07
+AVE VA07
+AVE VA06
 AVD DA07
 AVD VA01
-AVE VA06
-AVE VA07
-AVA VA07
+AVD AVE
+AVD VA07
+AVD DA06
 AVA VA01
+AVA VA07
 Maximum imbalance
 -0.0
 Nonzero imbalances
@@ -659,8 +659,3 @@ DA06 3
 AVE 4
 AVD 5
 AVA 6
-Prohibited edges
- 1 2
-AVE VA12 1.0
-DA03 VA12 1.0
-"VA03    VA10    1"  
