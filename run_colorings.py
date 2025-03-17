@@ -18,7 +18,7 @@ cmap = get_colormap()
 input_file = 'dataset/old'
 
 
-worm_dicts = read_input_mat_file(input_file, remove_trend=False, smooth_spikes=False, mean_zero=False)
+worm_dicts = read_input(input_file, remove_trend=False, smooth_spikes=False, mean_zero=False)
     
 averaged_results = calculate_metrics(worm_dicts, use_annotations = True, return_average = True)
 

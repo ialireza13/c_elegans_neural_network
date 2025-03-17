@@ -20,10 +20,21 @@ def get_colormap(fname='utils/colormap_parula.txt'):
     return cmap
 
 
-def read_input_mat_file(pathname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False):
-    '''
-        pathname: 
-    '''
+def read_input(pathname: str, remove_trend: bool=False, smooth_spikes: bool=False, mean_zero: bool=False):
+    """
+        Reads input .csv files from the specified directory, processes the neural signals, and returns a list of dictionaries 
+        containing the processed signals for each worm.
+        Parameters:
+        pathname (str): The path to the directory containing the .csv files.
+        remove_trend (bool, optional): If True, detrends the neural signals. Default is False.
+        smooth_spikes (bool, optional): If True, detects and smooths spikes in the neural signals. Default is False.
+        mean_zero (bool, optional): If True, normalizes the neural signals to have zero mean. Default is False.
+        Returns:
+        list: A list of dictionaries, each containing the processed neural signals for a worm. Each dictionary has neuron names 
+        as keys and their corresponding processed signals as values. If the 'annot' column is present in the dataset, it is also 
+        included in the dictionary.
+    """
+    
     dataset = [pd.read_csv(pathname + '/' + x) for x in sorted(os.listdir(pathname), key=lambda x: int(x.split('_')[1].split('.')[0]))]
 
     neuron_names = []
@@ -287,6 +298,15 @@ def plot_graph_with_weights_and_groups(G, pos=None, draw_edge_labels=False, unif
     
 
 def get_cooccurrence_matrix(all_cliques, mapping_neuron_to_idx):
+    '''
+        Computes the co-occurrence matrix for neurons based on their presence in cliques.
+        This function calculates how many times each pair of neurons co-occur in the same clique and normalizes the matrix by the maximum value.
+        Parameters:
+        all_cliques (list of list of list): A list of cliques, where each clique is a list of neurons.
+        mapping_neuron_to_idx (dict): A dictionary mapping each neuron to its corresponding index in the matrix.
+        Returns:
+        np.ndarray: A normalized co-occurrence matrix where each element (i, j) represents the normalized count of how many times neuron i and neuron j co-occur in the same clique.
+    '''
     cooccurrence_matrix = np.ones((len(mapping_neuron_to_idx), len(mapping_neuron_to_idx)))
 
     for cliques in all_cliques:
@@ -300,14 +320,14 @@ def get_cooccurrence_matrix(all_cliques, mapping_neuron_to_idx):
 
 def calculate_percolation(correlation_matrix):
     """
-    Calculate the percolation threshold of a correlation matrix
-    and return the adjacency matrix at the percolation threshold.
-    
-    Parameters:
-    correlation_matrix (numpy.ndarray): The input correlation matrix.
-    
-    Returns:
-    The adjacency matrix at the percolation threshold
+        Calculate the percolation threshold of a correlation matrix
+        and return the adjacency matrix at the percolation threshold.
+        
+        Parameters:
+        correlation_matrix (numpy.ndarray): The input correlation matrix.
+        
+        Returns:
+        The adjacency matrix at the percolation threshold
     """
     if not isinstance(correlation_matrix, np.ndarray):
         raise ValueError("Input must be a numpy array.")
@@ -397,26 +417,24 @@ def los_range(signal1, signal2, range_start = 0.01, range_stop = 0.2, range_step
 
 def calculate_metrics(worm_dicts: list, use_annotations: bool = True, return_average: bool = False):
     """
-    Calculate different metrics for the given worm data.
-    This function computes various statistical metrics between pairs of neurons
-    for each worm in the provided list of worm dictionaries. The metrics include
-    Pearson correlation, Spearman correlation, Kendall's tau, distance correlation,
-    and covariance. Optionally, it can exclude annotated data points and return
-    the average metrics across all worms.
-    
-    Parameters:
-    worm_dicts (list): A list of dictionaries, where each dictionary contains neuron data for a worm.
-    use_annotations (bool): If True, exclude data points where the annotation is 1. Default is True.
-    return_average (bool): If True, return the average metrics across all worms. Default is False.
-    Returns:
-    list or dict: If return_average is False, returns a list of dictionaries containing metrics for each worm.
-                  If return_average is True, returns a dictionary of averaged metrics across all worms.
+        Calculate different metrics for the given worm data.
+        This function computes various statistical metrics between pairs of neurons
+        for each worm in the provided list of worm dictionaries. The metrics include
+        Pearson correlation, Spearman correlation, Kendall's tau, distance correlation,
+        and covariance. Optionally, it can exclude annotated data points and return
+        the average metrics across all worms.
+        
+        Parameters:
+        worm_dicts (list): A list of dictionaries, where each dictionary contains neuron data for a worm.
+        use_annotations (bool): If True, exclude data points where the annotation is 1. Default is True.
+        return_average (bool): If True, return the average metrics across all worms. Default is False.
+        Returns:
+        list or dict: If return_average is False, returns a list of dictionaries containing metrics for each worm.
+                    If return_average is True, returns a dictionary of averaged metrics across all worms.
     """
     all_metrics = []
 
-    worms = range(len(worm_dicts))
-
-    for worm_id in tqdm(worms):
+    for worm_id in tqdm(range(len(worm_dicts))):
         worm_results = {}
         neurons = [x for x in list(worm_dicts[worm_id].keys()) if x!='annot']
         for neuron_1 in range(len(neurons)):
